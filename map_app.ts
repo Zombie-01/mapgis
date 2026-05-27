@@ -95,8 +95,9 @@ export enum ChatRole {
 // This key is essential for loading and using Google Maps services.
 // Ensure this key is configured with access to the "Maps JavaScript API",
 // "Geocoding API", and the "Directions API".
-const USER_PROVIDED_GOOGLE_MAPS_API_KEY: string =
-  import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
+const USER_PROVIDED_GOOGLE_MAPS_API_KEY: string = (
+  import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ""
+).trim();
 
 const EXAMPLE_PROMPTS = [
   "Уул уурхайн ашиглалтын лиценз болон тусгай хамгаалалттай бүсүүдийг харуулах",
@@ -243,10 +244,10 @@ export class MapApp extends LitElement {
       USER_PROVIDED_GOOGLE_MAPS_API_KEY === "";
 
     if (isApiKeyPlaceholder) {
-      this.mapError = `Google Maps API Key is not configured correctly.
-Please edit the map_app.ts file and replace the placeholder value for
-USER_PROVIDED_GOOGLE_MAPS_API_KEY with your actual API key.
-You can find this constant near the top of the map_app.ts file.`;
+      this.mapError = `Google Maps API key is missing.
+Please set VITE_GOOGLE_MAPS_API_KEY in a local .env file for development
+or configure the same variable in Vercel project settings for production.
+The app uses import.meta.env.VITE_GOOGLE_MAPS_API_KEY in map_app.ts.`;
       console.error(this.mapError);
       this.requestUpdate();
       return;
@@ -869,6 +870,7 @@ You can find this constant near the top of the map_app.ts file.`;
       admin: true,
       road: true,
       risk: true,
+      resourceReserve: true,
     };
     this.filterQuery = "";
     this.isOverlapActive = true;
@@ -912,6 +914,7 @@ You can find this constant near the top of the map_app.ts file.`;
           admin: true,
           road: true,
           risk: true,
+          resourceReserve: true,
         };
         this.isOverlapActive = true;
         this.addSystemNotification(
@@ -930,6 +933,7 @@ You can find this constant near the top of the map_app.ts file.`;
           admin: false,
           road: false,
           risk: false,
+          resourceReserve: false,
         };
         this.isOverlapActive = false;
         this.addSystemNotification(
@@ -968,6 +972,7 @@ You can find this constant near the top of the map_app.ts file.`;
           admin: visible,
           road: visible,
           risk: visible,
+          resourceReserve: visible,
         };
       } else if (this.activeLayers[lid] !== undefined) {
         this.activeLayers = {
