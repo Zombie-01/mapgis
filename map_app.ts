@@ -91,12 +91,12 @@ export enum ChatRole {
   SYSTEM,
 }
 
-// Google Maps API Key: Replace with your actual Google Maps API key.
+// Google Maps API Key: Use a Vite environment variable instead of embedding the key.
 // This key is essential for loading and using Google Maps services.
 // Ensure this key is configured with access to the "Maps JavaScript API",
 // "Geocoding API", and the "Directions API".
 const USER_PROVIDED_GOOGLE_MAPS_API_KEY: string =
-  "AIzaSyBIG7eJTTD96jGXK0u9AcIZwKitQAG1RV0"; // <-- REPLACE THIS WITH YOUR ACTUAL API KEY
+  import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "";
 
 const EXAMPLE_PROMPTS = [
   "Уул уурхайн ашиглалтын лиценз болон тусгай хамгаалалттай бүсүүдийг харуулах",
