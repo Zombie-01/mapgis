@@ -12,7 +12,8 @@
  * tool calls to the server.
  */
 
-import {GoogleGenAI, mcpToTool} from '@google/genai';
+// import {GoogleGenAI, mcpToTool} from '@google/genai';
+import {mcpToTool} from '@google/genai';
 import {Client} from '@modelcontextprotocol/sdk/client/index.js';
 import {InMemoryTransport} from '@modelcontextprotocol/sdk/inMemory.js';
 import {Transport} from '@modelcontextprotocol/sdk/shared/transport.js';
@@ -78,19 +79,19 @@ ACTION: zoom_to(mining_oyu_tolgoi)
 ACTION: toggle_layer(mining, true)
 RESPONSE: "Centered view on Oyu Tolgoi. The copper license is fully active and sits inside the Galba-Uul deep fossil groundwater basin."`;
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.API_KEY,
-});
-
-function createAiChat(mcpClient: Client) {
-  return ai.chats.create({
-    model: 'gemini-2.5-flash',
-    config: {
-      systemInstruction: SYSTEM_INSTRUCTIONS,
-      tools: [mcpToTool(mcpClient)],
-    },
-  });
-}
+// const ai = new GoogleGenAI({
+//   apiKey: process.env.API_KEY,
+// });
+//
+// function createAiChat(mcpClient: Client) {
+//   return ai.chats.create({
+//     model: 'gemini-2.5-flash',
+//     config: {
+//       systemInstruction: SYSTEM_INSTRUCTIONS,
+//       tools: [mcpToTool(mcpClient)],
+//     },
+//   });
+// }
 
 function camelCaseToDash(str: string): string {
   return str
@@ -115,7 +116,8 @@ document.addEventListener('DOMContentLoaded', async (event) => {
   );
 
   const mcpClient = await startClient(transportB);
-  const aiChat = createAiChat(mcpClient);
+  // Gemini integration is disabled in this build. Uncomment the code above to re-enable.
+  // const aiChat = createAiChat(mcpClient);
 
   mapApp.sendMessageHandler = async (input: string, role: string) => {
     console.log('sendMessageHandler', input, role);
@@ -133,54 +135,11 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
     try {
       // Outer try for overall message handling including post-processing
-      try {
-        // Inner try for AI interaction and message parsing
-        const stream = await aiChat.sendMessageStream({message: input});
-
-        for await (const chunk of stream) {
-          for (const candidate of chunk.candidates ?? []) {
-            for (const part of candidate.content?.parts ?? []) {
-              if (part.functionCall) {
-                console.log(
-                  'FUNCTION CALL:',
-                  part.functionCall.name,
-                  part.functionCall.args,
-                );
-                const mcpCall = {
-                  name: camelCaseToDash(part.functionCall.name!),
-                  arguments: part.functionCall.args,
-                };
-
-                const explanation =
-                  'Calling function:\n```json\n' +
-                  JSON.stringify(mcpCall, null, 2) +
-                  '\n```';
-                const {textElement: functionCallText} = mapApp.addMessage(
-                  'assistant',
-                  '',
-                );
-                functionCallText.innerHTML = await marked.parse(explanation);
-              }
-
-              if (part.thought) {
-                mapApp.setChatState(ChatState.THINKING);
-                thoughtAccumulator += ' ' + part.thought;
-                thinkingElement.innerHTML =
-                  await marked.parse(thoughtAccumulator);
-                if (thinkingContainer) {
-                  thinkingContainer.classList.remove('hidden');
-                  thinkingContainer.setAttribute('open', 'true');
-                }
-              } else if (part.text) {
-                mapApp.setChatState(ChatState.EXECUTING);
-                newCode += part.text;
-                textElement.innerHTML = await marked.parse(newCode);
-              }
-              mapApp.scrollToTheEnd();
-            }
-          }
-        }
-      } catch (e: unknown) {
+      // Gemini integration is disabled. The remote AI stream is commented out.
+      textElement.innerHTML = await marked.parse(
+        'Gemini integration is disabled. Re-enable it by uncommenting the GoogleGenAI code in index.tsx.',
+      );
+    } catch (e: unknown) {
         // Catch for AI interaction errors.
         console.error('GenAI SDK Error:', e);
         let baseErrorText: string;
